@@ -7,6 +7,10 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 
+import { auth } from "@/app/lib/firebase";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+
+
 const FormSchema = z.object({
   id: z.string(),
   customerId: z.string({
@@ -133,4 +137,28 @@ export async function authenticate(
     }
     throw error;
   }
+}
+
+export async function authenticateWithFirebase(
+  prevState: string | undefined,
+  formData: FormData,
+) {
+  const email = formData.get('email') as string;
+  const password = formData.get('password') as string;
+
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const idToken = await userCredential.user.getIdToken();
+    console.log(idToken);
+    await signIn('credentials', formData);
+  } catch (error) {
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case 'CredentialsSignin':
+          return 'Invalid credentials.';
+        default:
+          return 'Something went wrong.';
+      }
+    }
+    throw error;  }
 }

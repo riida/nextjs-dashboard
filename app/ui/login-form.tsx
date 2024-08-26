@@ -1,7 +1,7 @@
 'use client';
 
 import { lusitana } from '@/app/ui/fonts';
-import { authenticate } from '@/app/lib/actions';
+import { authenticateWithFirebase } from '@/app/lib/actions';
 import {
   AtSymbolIcon,
   KeyIcon,
@@ -12,7 +12,7 @@ import { Button } from './button';
 import { useFormState, useFormStatus } from 'react-dom';
 
 export default function LoginForm() {
-  const [errorMessage, dispatch] = useFormState(authenticate, undefined);
+  const [errorMessage, dispatch] = useFormState(authenticateWithFirebase, undefined);
 
   return (
     <form action={dispatch} className="space-y-3">
