@@ -1,7 +1,7 @@
 'use client';
 
 import { lusitana } from '@/app/ui/fonts';
-import { authenticate } from '@/app/lib/actions';
+import { authenticate as authenticateServer } from '@/app/lib/actions';
 import {
   AtSymbolIcon,
   KeyIcon,
@@ -10,9 +10,12 @@ import {
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { Button } from './button';
 import { useFormState, useFormStatus } from 'react-dom';
+import client from '@/app/lib/axios-client';
 
 export default function LoginForm() {
-  const [errorMessage, dispatch] = useFormState(authenticate, undefined);
+  const [errorMessage, dispatch] = useFormState(authenticateServer, undefined);
+  // ログインフォームsubmitまでにXSRF-TOKENを取得しておく
+  client.get('/sanctum/csrf-cookie');
 
   return (
     <form action={dispatch} className="space-y-3">
@@ -88,3 +91,11 @@ function LoginButton() {
     </Button>
   );
 }
+
+// function authenticate(
+//   prevState: string | undefined,
+//   formData: FormData,
+// ) {
+//   // APIログイン処理（セッション情報の取得まで）
+//   return authenticateServer(prevState, formData);
+// }
