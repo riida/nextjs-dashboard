@@ -1,5 +1,6 @@
 import { sql } from '@vercel/postgres';
 import { unstable_noStore as noStore } from 'next/cache';
+import client from '@/app/lib/axios-server-client';
 
 import {
   CustomerField,
@@ -240,4 +241,15 @@ export async function getUser(email: string) {
     console.error('Failed to fetch user:', error);
     throw new Error('Failed to fetch user.');
   }
+}
+
+export async function fetchProducts() {
+    noStore();
+    try {
+      const products = await client.get('/products');
+      return products;
+    } catch (error) {
+      console.error('Failed to fetch products:', error);
+      throw new Error('Failed to fetch products.');
+    }
 }
