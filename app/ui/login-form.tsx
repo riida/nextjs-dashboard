@@ -11,9 +11,12 @@ import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { Button } from './button';
 import { useFormState, useFormStatus } from 'react-dom';
 import client from '@/app/lib/axios-client';
+import { auth as firebaseAuth } from "@/app/lib/firebase/client";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 export default function LoginForm() {
-  const [errorMessage, dispatch] = useFormState(authenticateServer, undefined);
+  firebaseAuth;
+  const [errorMessage, dispatch] = useFormState(authenticate, undefined);
   // ログインフォームsubmitまでにXSRF-TOKENを取得しておく
   client.get('/sanctum/csrf-cookie');
 
@@ -92,10 +95,24 @@ function LoginButton() {
   );
 }
 
-// function authenticate(
-//   prevState: string | undefined,
-//   formData: FormData,
-// ) {
-//   // APIログイン処理（セッション情報の取得まで）
-//   return authenticateServer(prevState, formData);
-// }
+async function authenticate(
+  prevState: string | undefined,
+  formData: FormData,
+) {
+  // APIログイン処理（セッション情報の取得まで）
+  await client.get('/sanctum/csrf-cookie');
+  const email = formData.get('email') as string;
+  const password = formData.get('password') as string;
+  const userCredential = await signInWithEmailAndPassword(firebaseAuth, email, password);
+  const idToken = await userCredential.user.getIdToken();
+  // id_tokenの検証はサーバサイドで行う
+  const res = await client.post('/login',
+    {
+      'id_token': idToken,
+    },
+  );
+  formData.append('id', res.data.id);
+  formData.append('name', res.data.name);
+  formData.append('email', res.data.email);
+  return authenticateServer(prevState, formData);
+}

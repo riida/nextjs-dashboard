@@ -11,7 +11,6 @@ const client = axios.create(
 client.interceptors.request.use(async (request) => {
   request.withCredentials = true
   request.withXSRFToken = true
-  console.log('Starting Request (Client Component): ', request)
   return request
 })
 

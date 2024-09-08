@@ -19,7 +19,6 @@ client.interceptors.request.use(async (request) => {
   request.headers.Referer = headers().get('referer') ?? ''
   request.headers.Cookie = cookie
   request.headers['X-XSRF-TOKEN'] = xsrfToken
-  console.log('Starting Request (Server Component): ', request)
   return request
 })
 
