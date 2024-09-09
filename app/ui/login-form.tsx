@@ -17,8 +17,6 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 export default function LoginForm() {
   firebaseAuth;
   const [errorMessage, dispatch] = useFormState(authenticate, undefined);
-  // ログインフォームsubmitまでにXSRF-TOKENを取得しておく
-  client.get('/sanctum/csrf-cookie');
 
   return (
     <form action={dispatch} className="space-y-3">
