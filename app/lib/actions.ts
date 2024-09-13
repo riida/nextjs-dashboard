@@ -97,7 +97,7 @@ export async function updateInvoice(
     `;
   } catch (error) {
     return {
-      message: 'Database Error: Failed to Update Invoice.'
+      message: 'Database Error: Failed to Update Invoice.',
     };
   }
   revalidatePath('/dashboard/invoices');

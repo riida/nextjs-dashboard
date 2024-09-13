@@ -11,11 +11,11 @@ import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { Button } from './button';
 import { useFormState, useFormStatus } from 'react-dom';
 import client from '@/app/lib/axios-client';
-import { auth as firebaseAuth } from "@/app/lib/firebase/client";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { app as firebaseApp } from "@/app/lib/firebase/client";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
 export default function LoginForm() {
-  firebaseAuth;
+  firebaseApp();
   const [errorMessage, dispatch] = useFormState(authenticate, undefined);
 
   return (
@@ -101,7 +101,7 @@ async function authenticate(
   await client.get('/sanctum/csrf-cookie');
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
-  const userCredential = await signInWithEmailAndPassword(firebaseAuth, email, password);
+  const userCredential = await signInWithEmailAndPassword(getAuth(firebaseApp()), email, password);
   const idToken = await userCredential.user.getIdToken();
   // id_tokenの検証はサーバサイドで行う
   const res = await client.post('/login',

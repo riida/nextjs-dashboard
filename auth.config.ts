@@ -9,11 +9,10 @@ export const authConfig = {
     async authorized({ auth, request: { nextUrl } }) {
       let isLoggedInServer = false;
       try {
-        const res = await client.get('/auth/info');
-          console.log('User is logged in:', res);
+        await client.get('/auth/info');
         isLoggedInServer = true;
       } catch (error) {
-        console.error('Error checking if user is logged in:', error);
+        console.error('Error checking if user is logged in');
       }
       const isLoggedIn = !!auth?.user && isLoggedInServer;
       const isOnDashboard = nextUrl.pathname.startsWith('/dashboard');
