@@ -5,9 +5,7 @@ const axiosConfig: AxiosRequestConfig = {
   timeout: 30000,
 }
 
-const client = axios.create(
-    axiosConfig,
-)
+const client = axios.create(axiosConfig)
 client.interceptors.request.use(async (request) => {
   request.withCredentials = true
   request.withXSRFToken = true

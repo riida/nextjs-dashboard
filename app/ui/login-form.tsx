@@ -1,22 +1,22 @@
-'use client';
+'use client'
 
-import { lusitana } from '@/app/ui/fonts';
-import { authenticate as authenticateServer } from '@/app/lib/actions';
+import { authenticate as authenticateServer } from '@/app/lib/actions'
+import client from '@/app/lib/axios-client'
+import { app as firebaseApp } from '@/app/lib/firebase/client'
+import { lusitana } from '@/app/ui/fonts'
+import { ArrowRightIcon } from '@heroicons/react/20/solid'
 import {
   AtSymbolIcon,
-  KeyIcon,
   ExclamationCircleIcon,
-} from '@heroicons/react/24/outline';
-import { ArrowRightIcon } from '@heroicons/react/20/solid';
-import { Button } from './button';
-import { useFormState, useFormStatus } from 'react-dom';
-import client from '@/app/lib/axios-client';
-import { app as firebaseApp } from "@/app/lib/firebase/client";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+  KeyIcon,
+} from '@heroicons/react/24/outline'
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
+import { useFormState, useFormStatus } from 'react-dom'
+import { Button } from './button'
 
 export default function LoginForm() {
-  firebaseApp();
-  const [errorMessage, dispatch] = useFormState(authenticate, undefined);
+  firebaseApp()
+  const [errorMessage, dispatch] = useFormState(authenticate, undefined)
 
   return (
     <form action={dispatch} className="space-y-3">
@@ -80,37 +80,36 @@ export default function LoginForm() {
         </div>
       </div>
     </form>
-  );
+  )
 }
 
 function LoginButton() {
-  const { pending } = useFormStatus();
+  const { pending } = useFormStatus()
 
   return (
     <Button className="mt-4 w-full" aria-disabled={pending}>
       Log in <ArrowRightIcon className="ml-auto h-5 w-5 text-gray-50" />
     </Button>
-  );
+  )
 }
 
-async function authenticate(
-  prevState: string | undefined,
-  formData: FormData,
-) {
+async function authenticate(prevState: string | undefined, formData: FormData) {
   // APIログイン処理（セッション情報の取得まで）
-  await client.get('/sanctum/csrf-cookie');
-  const email = formData.get('email') as string;
-  const password = formData.get('password') as string;
-  const userCredential = await signInWithEmailAndPassword(getAuth(firebaseApp()), email, password);
-  const idToken = await userCredential.user.getIdToken();
+  await client.get('/sanctum/csrf-cookie')
+  const email = formData.get('email') as string
+  const password = formData.get('password') as string
+  const userCredential = await signInWithEmailAndPassword(
+    getAuth(firebaseApp()),
+    email,
+    password,
+  )
+  const idToken = await userCredential.user.getIdToken()
   // id_tokenの検証はサーバサイドで行う
-  const res = await client.post('/login',
-    {
-      'id_token': idToken,
-    },
-  );
-  formData.append('id', res.data.id);
-  formData.append('name', res.data.name);
-  formData.append('email', res.data.email);
-  return authenticateServer(prevState, formData);
+  const res = await client.post('/login', {
+    id_token: idToken,
+  })
+  formData.append('id', res.data.id)
+  formData.append('name', res.data.name)
+  formData.append('email', res.data.email)
+  return authenticateServer(prevState, formData)
 }
