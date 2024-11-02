@@ -13,6 +13,7 @@ export const authConfig = {
         isLoggedInServer = true
       } catch (error) {
         console.error('Error checking if user is logged in')
+        console.log(error)
       }
       const isLoggedIn = !!auth?.user && isLoggedInServer
       const isOnDashboard = nextUrl.pathname.startsWith('/dashboard')
